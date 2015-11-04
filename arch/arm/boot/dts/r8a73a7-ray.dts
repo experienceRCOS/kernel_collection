@@ -1,0 +1,21 @@
+/*
+ * Device Tree Source for the r8a73a7 based Ray board
+ *
+ * Copyright (C) 2013 Renesas Mobile
+ *
+ * This file is licensed under the terms of the GNU General Public License
+ * version 2.  This program is licensed "as is" without any warranty of any
+ * kind, whether express or implied.
+ */
+
+/dts-v1/;
+#ifdef SECURE_CARVEOUT	// Allow secure variant to insert memreserve, normally do nothing.
+SECURE_CARVEOUT
+#endif
+#include "r8a73a7.dtsi"
+#include "ray.dtsi"
+
+/{
+	model = "U2B Ray";
+	compatible = "renesas,ray,r8a73a7", "renesas,ray", "renesas,r8a73a7";
+};

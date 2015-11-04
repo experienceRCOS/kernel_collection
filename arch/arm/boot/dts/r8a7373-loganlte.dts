@@ -1,0 +1,112 @@
+/*
+ * Device Tree Source for the r8a7373 based loganlte board
+ *
+ * Copyright (C) 2013 Renesas Mobile
+ *
+ * This file is licensed under the terms of the GNU General Public License
+ * version 2.  This program is licensed "as is" without any warranty of any
+ * kind, whether express or implied.
+ */
+
+/dts-v1/;
+#ifdef SECURE_CARVEOUT	// Allow secure variant to insert memreserve, normally do nothing.
+SECURE_CARVEOUT
+#endif
+#include "r8a7373.dtsi"
+#include "rmobile-common.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+/{
+	model = "LoganLTE";
+	compatible = "renesas,loganlte", "renesas,r8a7373";
+
+	chosen {
+		bootargs = "console=ttySC0,115200 earlyprintk=sh-sci.0,115200 ignore_loglevel";
+		linux,sysrq-reset-seq {
+			keyset = <KEY_VOLUMEDOWN KEY_VOLUMEUP>;
+			timeout-ms = <3000>;
+		};
+	};
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0x40000000 0x40000000>;
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+		#address-cells = <0>;
+		#size-cells = <0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&key_pins>;
+
+		volume-up {
+			label = "+";
+			gpios = <&pfc 1 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEUP>;
+			gpio-key,wakeup;
+		};
+
+		volume-down {
+			label = "-";
+			gpios = <&pfc 2 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEDOWN>;
+			gpio-key,wakeup;
+		};
+
+		/* Code may be changed to KEY_HOME by setup-u2gpio_key.c */
+		home_button: home {
+			label = "Home";
+			gpios = <&pfc 18 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_HOMEPAGE>;
+			gpio-key,wakeup;
+		};
+	};
+
+	bcm-bt-rfkill {
+		compatible = "bcm,bcm-bt-rfkill";
+		bcm-bt-rfkill-vreg-gpio = <&pfc 268 GPIO_ACTIVE_HIGH>;
+		bcm-bt-rfkill-n-reset-gpio = <&pfc 15 GPIO_ACTIVE_LOW>;
+	};
+
+	sound {
+		compatible = "renesas,fsi-snd-d2153";
+		renesas,fsia = <&sh_fsi>;
+		renesas,fsib = <&sh_fsi2>;
+		renesas,mclk-freq = <13000000>;
+		renesas,audio-routing =
+			"RECCHL", "AIFOUTL",
+			"RECCHR", "AIFOUTR",
+			"AIFINL", "VCLK4",
+			"AIFINR", "VCLK4",
+			"AIFOUTL", "VCLK4",
+			"AIFOUTR", "VCLK4",
+			"Headphone Jack Left", "Headphone Left PGA",
+			"Headphone Jack Right", "Headphone Right PGA",
+			"Speaker", "Speaker PGA",
+			"Earpiece", "Earpiece PGA";
+	};
+};
+
+&pfc {
+	key_pins: keys {
+		renesas,pins = "PORT1", "PORT2", "PORT18";
+		bias-pull-up;
+	};
+};
+
+&i2c4 {
+	touchscreen@20 {
+		compatible = "zinitix,zinitix-touch";
+		reg = <0x20>;
+		gpios = <&pfc 32 GPIO_ACTIVE_LOW>;
+	};
+
+	touchscreen@50 {
+		compatible = "imagis,ist30xx";
+		reg = <0x50>;
+		interrupt-parent = <&irqc1>;
+		interrupts = <0 IRQ_TYPE_EDGE_FALLING>;
+	};
+};

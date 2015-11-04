@@ -1,0 +1,145 @@
+/*
+ * Shared Device Tree for R-Mobile boards
+ *
+ * Copyright (C) 2013 Renesas Mobile
+ *
+ * This file is licensed under the terms of the GNU General Public License
+ * version 2.  This program is licensed "as is" without any warranty of any
+ * kind, whether express or implied.
+ *
+ * This file should contain data common to all R-Mobile production devices.
+ *
+ * For clarity, settings that vary across boards should normally be placed in
+ * each individual board, with no default here. General rule - if it starts to
+ * vary, it no longer belongs here.
+ *
+ * In the case where there's a one-off or very rare deviation, the default
+ * may remain here, but add a comment to the setting in this file to indicate
+ * on which board(s) it gets overridden.
+ */
+
+&pfc {
+	i2c4_pins: i2c4 {
+		renesas,groups = "i2c0h";
+		renesas,function = "i2c0h";
+		bias-disable;
+	};
+	i2c4_pins_hiz: i2c4_hiz {
+		renesas,groups = "i2c0h";
+		bias-high-impedance;
+	};
+	i2c5_pins: i2c5 {
+		renesas,groups = "i2c1h";
+		renesas,function = "i2c1h";
+		bias-disable;
+	};
+	i2c5_pins_hiz: i2c5_hiz {
+		renesas,groups = "i2c1h";
+		bias-high-impedance;
+	};
+	i2c6_pins: i2c6 {
+		renesas,groups = "i2c2h";
+		renesas,function = "i2c2h";
+		bias-disable;
+	};
+	i2c6_pins_hiz: i2c6_hiz {
+		renesas,groups = "i2c2h";
+		bias-high-impedance;
+	};
+	i2c7_pins: i2c7 {
+		renesas,groups = "i2c3h";
+		renesas,function = "i2c3h";
+		bias-disable;
+	};
+	i2c7_pins_hiz: i2c7_hiz {
+		renesas,groups = "i2c3h";
+		bias-high-impedance;
+	};
+	stm_sdhi0_pins: stm_sdhi0 {
+		mux {
+			renesas,groups = "stm_data4", "stm_ctrl";
+			renesas,function = "stm";
+		};
+		cfg {
+			renesas,pins = "PORT324"; /*SIDI */
+			bias-pull-up;
+		};
+	};
+	stm_sdhi1_pins: stm_sdhi1 {
+		mux {
+			renesas,groups = "stm_data4_b", "stm_ctrl_b";
+			renesas,function = "stm";
+		};
+		cfg {
+			renesas,pins = "PORT293"; /*SIDI */
+			bias-pull-up;
+		};
+	};
+};
+
+/* Used for PMIC - dedicated pins */
+&i2c0 {
+	status = "okay";
+};
+
+/* Used for cameras - dedicated pins */
+&i2c1 {
+	status = "okay";
+};
+
+/* Used for sensors - dedicated pins */
+&i2c2 {
+	status = "okay";
+};
+
+/* Used for USB/UART switch - dedicated pins */
+&i2c3 {
+	status = "okay";
+};
+
+/* Used for touchscreen */
+&i2c4 {
+	pinctrl-names = "default", "idle";
+	pinctrl-0 = <&i2c4_pins>;
+	pinctrl-1 = <&i2c4_pins_hiz>;
+	status = "okay";
+};
+
+/* Used for touchkeys on some boards */
+&i2c5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c5_pins>;
+};
+
+/* Not normally used */
+&i2c6 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c6_pins>;
+};
+
+/* Used for NFC */
+&i2c7 {
+	pinctrl-names = "default", "idle";
+	pinctrl-0 = <&i2c7_pins>;
+	pinctrl-1 = <&i2c7_pins_hiz>;
+	status = "okay";
+};
+
+/*
+ * STM interface - normally disabled; can be enabled in place of
+ * SDHI0 or SDHI1 (pins are shared). Board files will do so based
+ * on "stm" kernel parameter.
+ */
+&stm {
+	pinctrl-0 = <&stm_sdhi0_pins>;
+	pinctrl-1 = <&stm_sdhi1_pins>;
+};
+
+&usb {
+	dr_mode = "peripheral";
+	status = "okay";
+};
+
+&cmt17 {
+	renesas,linux-timer-type = "rtc";
+};
